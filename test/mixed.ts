@@ -12,6 +12,7 @@ import {
   tuple,
   ValidationError,
 } from '../src';
+import ValidationErrorNoStack from '../src/ValidationErrorNoStack';
 import ObjectSchema from '../src/object';
 import { ISchema } from '../src/types';
 import { ensureSync, validateAll } from './helpers';
@@ -335,6 +336,18 @@ describe('Mixed Types ', () => {
       expect(
         inst.strict().validate(' hi ', { abortEarly: false }),
       ).rejects.toThrowError(/2 errors/),
+    ]);
+  });
+
+  it('should respect disableStackTrace', () => {
+    let inst = string().trim();
+
+    return Promise.all([
+      expect(inst.strict().validate(' hi ')).rejects.toThrow(ValidationError),
+
+      expect(
+        inst.strict().validate(' hi ', { disableStackTrace: true }),
+      ).rejects.toThrow(ValidationErrorNoStack),
     ]);
   });
 

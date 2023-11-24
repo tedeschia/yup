@@ -1,3 +1,4 @@
+import ValidationError from './ValidationError';
 import printValue from './util/printValue';
 import toArray from './util/toArray';
 
@@ -5,7 +6,10 @@ let strReg = /\$\{\s*(\w+)\s*\}/g;
 
 type Params = Record<string, unknown>;
 
-export default class ValidationError extends Error {
+export default class ValidationErrorNoStack implements ValidationError {
+  name: string;
+  message: string;
+  stack?: string | undefined;
   value: any;
   path?: string;
   type?: string;
@@ -29,18 +33,12 @@ export default class ValidationError extends Error {
     return message;
   }
 
-  static isError(err: any): err is ValidationError {
-    return err && err.name === 'ValidationError';
-  }
-
   constructor(
     errorOrErrors: string | ValidationError | readonly ValidationError[],
     value?: any,
     field?: string,
     type?: string,
   ) {
-    super();
-
     this.name = 'ValidationError';
     this.value = value;
     this.path = field;
@@ -52,7 +50,8 @@ export default class ValidationError extends Error {
     toArray(errorOrErrors).forEach((err) => {
       if (ValidationError.isError(err)) {
         this.errors.push(...err.errors);
-        this.inner = this.inner.concat(err.inner.length ? err.inner : err);
+        const innerErrors = err.inner.length ? err.inner : [err];
+        this.inner.push(...innerErrors);
       } else {
         this.errors.push(err);
       }
@@ -62,7 +61,6 @@ export default class ValidationError extends Error {
       this.errors.length > 1
         ? `${this.errors.length} errors occurred`
         : this.errors[0];
-
-    if (Error.captureStackTrace) Error.captureStackTrace(this, ValidationError);
   }
+  [Symbol.toStringTag] = 'Error';
 }

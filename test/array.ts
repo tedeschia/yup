@@ -1,4 +1,13 @@
-import { string, number, object, array, StringSchema, AnySchema } from '../src';
+import {
+  string,
+  number,
+  object,
+  array,
+  StringSchema,
+  AnySchema,
+  ValidationError,
+} from '../src';
+import ValidationErrorNoStack from '../src/ValidationErrorNoStack';
 
 describe('Array types', () => {
   describe('casting', () => {
@@ -56,6 +65,9 @@ describe('Array types', () => {
 
     let merged = array(number()).concat(array(number().required()));
 
+    const ve = new ValidationError('');
+    // expect(ve.toString()).toBe('[object Error]');
+    expect(Object.prototype.toString.call(ve)).toBe('[object Error]');
     expect((merged.innerType as AnySchema).type).toBe('number');
 
     await expect(merged.validateAt('[0]', undefined)).rejects.toThrowError();
@@ -145,6 +157,19 @@ describe('Array types', () => {
         errors: ['[0].str is a required field', 'oops'],
       }),
     );
+  });
+
+  it('should respect disableStackTrace', async () => {
+    let inst = array().of(object({ str: string().required() }));
+
+    const data = [{ str: undefined }, { str: undefined }];
+    return Promise.all([
+      expect(inst.strict().validate(data)).rejects.toThrow(ValidationError),
+
+      expect(
+        inst.strict().validate(data, { disableStackTrace: true }),
+      ).rejects.toThrow(ValidationErrorNoStack),
+    ]);
   });
 
   it('should compact arrays', () => {
