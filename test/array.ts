@@ -7,6 +7,7 @@ import {
   AnySchema,
   ValidationError,
 } from '../src';
+import ValidationErrorNoStack from '../src/BasicValidationError';
 
 describe('Array types', () => {
   describe('casting', () => {
@@ -156,6 +157,19 @@ describe('Array types', () => {
         errors: ['[0].str is a required field', 'oops'],
       }),
     );
+  });
+
+  it('should respect disableStackTrace', async () => {
+    let inst = array().of(object({ str: string().required() }));
+
+    const data = [{ str: undefined }, { str: undefined }];
+    return Promise.all([
+      expect(inst.strict().validate(data)).rejects.toThrow(ValidationError),
+
+      expect(
+        inst.strict().validate(data, { disableStackTrace: true }),
+      ).rejects.toThrow(ValidationErrorNoStack),
+    ]);
   });
 
   it('should compact arrays', () => {
