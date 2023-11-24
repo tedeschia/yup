@@ -12,7 +12,7 @@ import {
   tuple,
   ValidationError,
 } from '../src';
-import ValidationErrorNoStack from '../src/BasicValidationError';
+import ValidationErrorNoStack from '../src/ValidationErrorNoStack';
 import ObjectSchema from '../src/object';
 import { ISchema } from '../src/types';
 import { ensureSync, validateAll } from './helpers';

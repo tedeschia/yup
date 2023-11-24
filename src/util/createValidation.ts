@@ -10,7 +10,7 @@ import {
 import Reference from '../Reference';
 import type { AnySchema } from '../schema';
 import isAbsent from './isAbsent';
-import ValidationErrorNoStack from '../BasicValidationError';
+import ValidationErrorNoStack from '../ValidationErrorNoStack';
 
 export type PanicCallback = (err: Error) => void;
 

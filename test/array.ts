@@ -7,7 +7,7 @@ import {
   AnySchema,
   ValidationError,
 } from '../src';
-import ValidationErrorNoStack from '../src/BasicValidationError';
+import ValidationErrorNoStack from '../src/ValidationErrorNoStack';
 
 describe('Array types', () => {
   describe('casting', () => {

@@ -17,7 +17,7 @@ export default class ValidationErrorNoStack implements ValidationError {
 
   params?: Params;
 
-  inner: ValidationErrorNoStack[];
+  inner: ValidationError[];
 
   static formatError(
     message: string | ((params: Params) => string) | unknown,
@@ -34,10 +34,7 @@ export default class ValidationErrorNoStack implements ValidationError {
   }
 
   constructor(
-    errorOrErrors:
-      | string
-      | ValidationErrorNoStack
-      | readonly ValidationErrorNoStack[],
+    errorOrErrors: string | ValidationError | readonly ValidationError[],
     value?: any,
     field?: string,
     type?: string,
